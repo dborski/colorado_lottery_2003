@@ -1,5 +1,6 @@
 require 'minitest/autorun'
 require 'minitest/pride'
+require 'mocha/minitest'
 require "./lib/contestant"
 require "./lib/game"
 require "./lib/colorado_lottery"
@@ -186,6 +187,26 @@ class ColoradoLotteryTest < Minitest::Test
     assert_equal Hash, @lottery.winners.last.class
     assert_equal 3, @lottery.winners.length
   end
+
+  def test_announce_winners
+    @lottery.register_contestant(@alexander, @pick_4)
+    @lottery.register_contestant(@alexander, @mega_millions)
+    @lottery.register_contestant(@frederick, @mega_millions)
+    @lottery.register_contestant(@winston, @cash_5)
+    @lottery.register_contestant(@winston, @mega_millions)
+    @lottery.register_contestant(@grace, @mega_millions)
+    @lottery.register_contestant(@grace, @cash_5)
+    @lottery.register_contestant(@grace, @pick_4)
+    @lottery.charge_contestants(@cash_5)
+    @lottery.charge_contestants(@mega_millions)
+    @lottery.charge_contestants(@pick_4)
+
+    @lottery.draw_winners
+
+    @lottery.expects(:winner).returns("Grace Hopper")
+
+    assert_equal "Grace Hopper won the Pick 4 on 04/12", @lottery.announce_winner("Pick 4")
+  end
 end
 
 ### Iteration 4
@@ -207,24 +228,8 @@ end
 #
 # - To test the #announce_winner method, you will need to stub the return value of #winners.
 #
-# ```ruby
-#
-# lottery.draw_winners
-# #=> "2020-04-07"
-#
-# lottery.winners.class
-# #=> Array
-#
-# lottery.winners.first.class
-# #=> Hash
-#
-# lottery.winners.last.class
-# #=> Hash
-#
-# lottery.winners.length
-# #=> 3
-#
-# # Based on the example return value of #winners above in the iteration 4 directions, the announce_winner method would then return the following:
+# # Based on the example return value of #winners above in the iteration 4 directions,
+# the announce_winner method would then return the following:
 #
 # lottery.announce_winner("Pick 4")
 # #=> "Grace Hopper won the Pick 4 on 04/07"

@@ -46,6 +46,20 @@ class ColoradoLottery
     end
     d = DateTime.now
     d.strftime("%Y-%m-%d")
-    require "pry"; binding.pry
+  end
+
+  def winner(game)
+    game_winner = nil
+    @winners.each do |winner_hash|
+      game_winner = winner_hash.key(game) if winner_hash.key(game) != nil
+    end
+    game_winner
+  end
+
+  def announce_winner(game)
+    date = draw_winners[5..-1]
+    date = date.sub("-", "/")
+
+    "#{winner(game)} won the #{game} on #{date}"
   end
 end
