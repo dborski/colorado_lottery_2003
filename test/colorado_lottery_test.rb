@@ -114,6 +114,58 @@ class ColoradoLotteryTest < Minitest::Test
     expected4 = {"Pick 4"=> [@alexander, @grace], "Mega Millions"=> [@alexander, @frederick, @winston, @grace], "Cash 5" => [@winston, @grace]}
     assert_equal expected4, @lottery.registered_contestants
   end
+
+  def test_eligible_contestants
+    @lottery.register_contestant(@alexander, @pick_4)
+    @lottery.register_contestant(@alexander, @mega_millions)
+    @lottery.register_contestant(@frederick, @mega_millions)
+    @lottery.register_contestant(@winston, @cash_5)
+    @lottery.register_contestant(@winston, @mega_millions)
+    @lottery.register_contestant(@grace, @mega_millions)
+    @lottery.register_contestant(@grace, @cash_5)
+    @lottery.register_contestant(@grace, @pick_4)
+
+    assert_equal [@alexander, @grace], @lottery.eligible_contestants(@pick_4)
+    assert_equal [@winston, @grace], @lottery.eligible_contestants(@cash_5)
+    assert_equal [@alexander, @frederick, @winston, @grace], @lottery.eligible_contestants(@mega_millions)
+  end
+
+  def test_can_charge_contestants
+    @lottery.register_contestant(@alexander, @pick_4)
+    @lottery.register_contestant(@alexander, @mega_millions)
+    @lottery.register_contestant(@frederick, @mega_millions)
+    @lottery.register_contestant(@winston, @cash_5)
+    @lottery.register_contestant(@winston, @mega_millions)
+    @lottery.register_contestant(@grace, @mega_millions)
+    @lottery.register_contestant(@grace, @cash_5)
+    @lottery.register_contestant(@grace, @pick_4)
+
+    @lottery.charge_contestants(@cash_5)
+
+    expected1 = {@cash_5 => ["Winston Churchill", "Grace Hopper"]}
+    assert_equal expected1, @lottery.current_contestants
+    assert_equal 19, @grace.spending_money
+    assert_equal 4, @winston.spending_money
+
+    @lottery.charge_contestants(@mega_millions)
+
+    expected2 = {@cash_5 => ["Winston Churchill", "Grace Hopper"],
+                @mega_millions => ["Alexander Aigades", "Frederick Douglas", "Grace Hopper"]}
+    assert_equal expected2, @lottery.current_contestants
+    assert_equal 14, @grace.spending_money
+    assert_equal 4, @winston.spending_money
+    assert_equal 5, @alexander.spending_money
+    assert_equal 15, @frederick.spending_money
+
+      @lottery.charge_contestants(@pick_4)
+
+    expected3 = {@cash_5 => ["Winston Churchill", "Grace Hopper"],
+                @mega_millions => ["Alexander Aigades", "Frederick Douglas", "Grace Hopper"],
+                @pick_4 => ["Alexander Aigades", "Grace Hopper"]}
+    assert_equal expected3, @lottery.current_contestants
+    assert_equal 12, @grace.spending_money
+    assert_equal 3, @alexander.spending_money
+  end
 end
 
 # ### Iteration 3
@@ -126,16 +178,7 @@ end
 # game and that have more spending_money than the cost.
 # - current_contestants are lists of contestant names who have been charged, organized by game.
 #
-# lottery.eligible_contestants(pick_4)
-# #=> [#<Contestant:0x007ffe95fab0b8...>,
-#  #<Contestant:0x007ffe99998190...>]
-#
-# lottery.eligible_contestants(cash_5)
-# #=> [#<Contestant:0x007ffe96db1180...>, #<Contestant:0x007ffe99998190...>]
-#
-# lottery.eligible_contestants(mega_millions)
-# #=> [#<Contestant:0x007ffe95fab0b8...>, #<Contestant:0x007ffe99848470...>, #<Contestant:0x007ffe99998190...>]
-#
+
 # lottery.charge_contestants(cash_5)
 #
 # lottery.current_contestants

@@ -4,7 +4,7 @@ class ColoradoLottery
   def initialize
     @registered_contestants = Hash.new { |hash, key| hash[key] = [] }
     @winners = []
-    @current_contestants = {}
+    @current_contestants = Hash.new { |hash, key| hash[key] = [] }
   end
 
   def interested_and_18?(contestant, game)
@@ -18,6 +18,23 @@ class ColoradoLottery
   def register_contestant(contestant, game)
     if can_register?(contestant, game)
       @registered_contestants[game.name] << contestant
-    end 
+    end
+  end
+
+  def eligible_contestants(game)
+    eligible_contestants = []
+    @registered_contestants.each do |key, value|
+      if key == game.name
+        eligible_contestants = value.find_all { |value| value.spending_money >= game.cost}
+      end
+    end
+    eligible_contestants
+  end
+
+  def charge_contestants(game)
+    eligible_contestants(game).each do |contestant|
+      @current_contestants[game] << contestant.full_name
+      contestant.spending_money -= game.cost
+    end
   end
 end
