@@ -157,7 +157,7 @@ class ColoradoLotteryTest < Minitest::Test
     assert_equal 5, @alexander.spending_money
     assert_equal 15, @frederick.spending_money
 
-      @lottery.charge_contestants(@pick_4)
+    @lottery.charge_contestants(@pick_4)
 
     expected3 = {@cash_5 => ["Winston Churchill", "Grace Hopper"],
                 @mega_millions => ["Alexander Aigades", "Frederick Douglas", "Grace Hopper"],
@@ -166,52 +166,72 @@ class ColoradoLotteryTest < Minitest::Test
     assert_equal 12, @grace.spending_money
     assert_equal 3, @alexander.spending_money
   end
+
+  def test_draw_winers
+    @lottery.register_contestant(@alexander, @pick_4)
+    @lottery.register_contestant(@alexander, @mega_millions)
+    @lottery.register_contestant(@frederick, @mega_millions)
+    @lottery.register_contestant(@winston, @cash_5)
+    @lottery.register_contestant(@winston, @mega_millions)
+    @lottery.register_contestant(@grace, @mega_millions)
+    @lottery.register_contestant(@grace, @cash_5)
+    @lottery.register_contestant(@grace, @pick_4)
+    @lottery.charge_contestants(@cash_5)
+    @lottery.charge_contestants(@mega_millions)
+    @lottery.charge_contestants(@pick_4)
+
+    assert_equal "2020-04-12", @lottery.draw_winners
+    assert_equal Array, @lottery.winners.class
+    assert_equal Hash, @lottery.winners.first.class
+    assert_equal Hash, @lottery.winners.last.class
+    assert_equal 3, @lottery.winners.length
+  end
 end
 
-# ### Iteration 3
+### Iteration 4
 #
 # - Use TDD to update your `Lottery` class so that it responds to the following interaction pattern.
-# - To save time, we will keep the same setup from iteration 2 with all of the same objects and interests,
- # plus we will add one additional contestant with interests at a specific point in the interaction.
-# - We will only register contestants that `#can_register?`
-# - `#eligible_contestants` is a list of all the contestants who have been registered to play a given
-# game and that have more spending_money than the cost.
-# - current_contestants are lists of contestant names who have been charged, organized by game.
+# - All of the setup remains the same, make sure you have registered and charged contestants for
+ # all of the games.
+# - The #draw_winners method returns the date of the drawing as a string, and populates the #winners
+# array with a random winner for each game based on available contestants
+# - Because the array for #winners will be populated randomly, we cannot guarantee its contents,
+# but we can guarantee that it will be an array of hashes that is the same length as the number of
+# games we have. An example, based on our setup, the return value could be:
 #
-
-# lottery.charge_contestants(cash_5)
+# <code>
+# [{"Winston Churchill"=>"Cash 5"},
+# {"Frederick Douglas"=>"Mega Millions"},
+# {"Grace Hopper"=>"Pick 4"}]
+# </code>
 #
-# lottery.current_contestants
-# #=> {#<Game:0x007f8a32295360...> => ["Winston Churchill", "Grace Hopper"]}
+# - To test the #announce_winner method, you will need to stub the return value of #winners.
 #
-# grace.spending_money
-# #=> 19
+# ```ruby
 #
-# winston.spending_money
-# #=> 4
+# lottery.draw_winners
+# #=> "2020-04-07"
 #
-# lottery.charge_contestants(mega_millions)
+# lottery.winners.class
+# #=> Array
 #
-# lottery.current_contestants
-# #=> {#<Game:0x007f8a32295360...> => ["Winston Churchill", "Grace Hopper"],
-#  #<Game:0x007f8a322ad5a0...> => ["Alexander Aigades", "Frederick Douglas", "Grace Hopper"]}
+# lottery.winners.first.class
+# #=> Hash
 #
-# grace.spending_money
-# #=> 14
+# lottery.winners.last.class
+# #=> Hash
 #
-# winston.spending_money
-# #=> 4
+# lottery.winners.length
+# #=> 3
 #
-# alexander.spending_money
-# #=> 5
+# # Based on the example return value of #winners above in the iteration 4 directions, the announce_winner method would then return the following:
 #
-# frederick.spending_money
-# #=> 15
+# lottery.announce_winner("Pick 4")
+# #=> "Grace Hopper won the Pick 4 on 04/07"
 #
-# lottery.charge_contestants(pick_4)
+# lottery.announce_winner("Cash 5")
+# #=> "Winston Churchill won the Cash 5 on 04/07"
 #
-# lottery.current_contestants
-# #=> {#<Game:0x007f8a32295360...> => ["Winston Churchill", "Grace Hopper"],
-# #<Game:0x007f8a322ad5a0...> => ["Alexander Aigades", "Frederick Douglas", "Grace Hopper"],
-# #<Game:0x007f8a317b5e40...> => ["Alexander Aigades", "Grace Hopper"]}
+# lottery.announce_winner("Mega Millions")
+# #=> "Frederick Douglas won the Mega Millions on 04/07"
 # ```

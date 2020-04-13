@@ -1,3 +1,5 @@
+require 'date'
+
 class ColoradoLottery
 
   attr_reader :registered_contestants, :winners, :current_contestants
@@ -36,5 +38,14 @@ class ColoradoLottery
       @current_contestants[game] << contestant.full_name
       contestant.spending_money -= game.cost
     end
+  end
+
+  def draw_winners
+    @current_contestants.each do |key, value|
+      @winners << {value.shuffle.first => key}
+    end
+    d = DateTime.now
+    d.strftime("%Y-%m-%d")
+    require "pry"; binding.pry
   end
 end
