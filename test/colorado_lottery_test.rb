@@ -65,19 +65,20 @@ class ColoradoLotteryTest < Minitest::Test
     assert_equal ({}), @lottery.current_contestants
   end
 
-  def test_interested_and_18
+  def test_if_contestant_is_interested_and_18
     assert_equal true, @lottery.interested_and_18?(@alexander, @pick_4)
     assert_equal false, @lottery.interested_and_18?(@benjamin, @mega_millions)
     assert_equal false, @lottery.interested_and_18?(@alexander, @cash_5)
   end
+
+  def test_if_contestant_can_register
+    assert_equal true, @lottery.can_register?(@alexander, @pick_4)
+    assert_equal false, @lottery.can_register?(@alexander, @cash_5)
+    assert_equal true, @lottery.can_register?(@frederick, @mega_millions)
+    assert_equal false, @lottery.can_register?(@benjamin, @mega_millions)
+    assert_equal false, @lottery.can_register?(@frederick, @cash_5)
+  end
 end
-
-
-
-
-
-
-
 
 
 # ### Iteration 2
@@ -87,27 +88,6 @@ end
 # - A contestant #can_register? if they are interested in the game,
 # 18 years of age or older, and they are either a Colorado resident or this is a national game
 
-# alexander.add_game_interest('Pick 4')
-#
-# alexander.add_game_interest('Mega Millions')
-#
-# frederick.add_game_interest('Mega Millions')
-#
-# winston.add_game_interest('Cash 5')
-#
-# winston.add_game_interest('Mega Millions')
-#
-# benjamin.add_game_interest('Mega Millions')
-#
-# lottery.interested_and_18?(alexander, pick_4)
-# #=> true
-#
-# lottery.interested_and_18?(benjamin, mega_millions)
-# #=> false
-#
-# lottery.interested_and_18?(alexander, cash_5)
-# #=> false
-#
 # lottery.can_register?(alexander, pick_4)
 # #=> true
 #
