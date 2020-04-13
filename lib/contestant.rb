@@ -1,7 +1,8 @@
 class Contestant
 
+  attr_accessor :spending_money
   attr_reader :first_name, :last_name, :age, :state_of_residence,
-              :spending_money, :game_interests
+              :game_interests
 
   def initialize(init_hash)
     @first_name = init_hash[:first_name]

@@ -1,25 +1,20 @@
+require 'date'
+
 class ColoradoLottery
 
   attr_reader :registered_contestants, :winners, :current_contestants
-  def initialize()
+  def initialize
     @registered_contestants = Hash.new { |hash, key| hash[key] = [] }
     @winners = []
-    @current_contestants = {}
+    @current_contestants = Hash.new { |hash, key| hash[key] = [] }
   end
 
-  def interested_and_18?(person_interested, game_interest)
-    person_interested.age >= 18 &&
-    person_interested.game_interests.include?(game_interest.name)
+  def interested_and_18?(contestant, game)
+    contestant.age >= 18 && contestant.game_interests.include?(game.name)
   end
 
-  def can_register?(person, game)
-    if interested_and_18?(person, game) && game.national_drawing?
-      true
-    elsif interested_and_18?(person, game) && !person.out_of_state?
-      true
-    else
-      false
-    end
+  def can_register?(contestant, game)
+    interested_and_18?(contestant, game) && (!contestant.out_of_state? || game.national_drawing?)
   end
 
   def register_contestant(contestant, game)
@@ -29,6 +24,42 @@ class ColoradoLottery
   end
 
   def eligible_contestants(game)
-    require "pry"; binding.pry
+    eligible_contestants = []
+    @registered_contestants.each do |key, value|
+      if key == game.name
+        eligible_contestants = value.find_all { |value| value.spending_money >= game.cost}
+      end
+    end
+    eligible_contestants
+  end
+
+  def charge_contestants(game)
+    eligible_contestants(game).each do |contestant|
+      @current_contestants[game] << contestant.full_name
+      contestant.spending_money -= game.cost
+    end
+  end
+
+  def draw_winners
+    @current_contestants.each do |key, value|
+      @winners << {value.shuffle.first => key}
+    end
+    d = DateTime.now
+    d.strftime("%Y-%m-%d")
+  end
+
+  def winner(game)
+    game_winner = nil
+    @winners.each do |winner_hash|
+      game_winner = winner_hash.key(game) if winner_hash.key(game) != nil
+    end
+    game_winner
+  end
+
+  def announce_winner(game)
+    date = draw_winners[5..-1]
+    date = date.sub("-", "/")
+
+    "#{winner(game)} won the #{game} on #{date}"
   end
 end
