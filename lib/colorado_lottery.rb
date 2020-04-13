@@ -8,18 +8,11 @@ class ColoradoLottery
   end
 
   def interested_and_18?(person_interested, game_interest)
-    person_interested.age >= 18 &&
-    person_interested.game_interests.include?(game_interest.name)
+    person_interested.age >= 18 && person_interested.game_interests.include?(game_interest.name)
   end
 
   def can_register?(person, game)
-    if interested_and_18?(person, game) && game.national_drawing?
-      true
-    elsif interested_and_18?(person, game) && !person.out_of_state?
-      true
-    else
-      false
-    end
+    interested_and_18?(person, game) && (game.national_drawing? || !person.out_of_state?)
   end
 
   def register_contestant(contestant, game)
@@ -29,6 +22,12 @@ class ColoradoLottery
   end
 
   def eligible_contestants(game)
-    require "pry"; binding.pry
+    contestants = @registered_contestants.find_all do |key, value|
+      key == game.name
+    end.flatten
+    contestants.shift
+    contestants.find_all do |contestant|
+      contestant.spending_money >= game.cost
+    end
   end
 end
