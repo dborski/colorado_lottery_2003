@@ -32,18 +32,23 @@ class ContestantTest < Minitest::Test
   def test_out_of_state
     assert_equal false, @alexander.out_of_state?
   end
+
+  def test_has_no_game_interests_by_default
+    assert_equal [], @alexander.game_interests
+  end
+
+  def test_can_add_game_interests
+    @alexander.add_game_interest('Mega Millions')
+    @alexander.add_game_interest('Pick 4')
+
+    assert_equal ["Mega Millions", "Pick 4"], @alexander.game_interests
+  end
 end
 
 
 
-#alexander.out_of_state?
-# #=> false
-#
-#alexander.game_interests
-# #=> []
-#
-#alexander.add_game_interest('Mega Millions')
-#alexander.add_game_interest('Pick 4')
+
+
 #
 #alexander.game_interests
 # => ["Mega Millions", "Pick 4"]
