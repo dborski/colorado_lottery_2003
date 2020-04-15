@@ -14,7 +14,17 @@ class ColoradoLotteryTest < Minitest::Test
     assert_instance_of ColoradoLottery, @lottery
   end
 
+  def test_registered_contestants_empty_hash
+    assert_equal ({}), @lottery.registered_contestants
+  end
 
+  def test_winners_empty_array_by_default
+    assert_equal [], @lottery.winners
+  end
+
+  def test_current_contestants_empty_hash
+    assert_equal ({}), @lottery.current_contestants
+  end
 end
 
 # ### Iteration 2
@@ -23,19 +33,7 @@ end
 #
 # - A contestant #can_register? if they are interested in the game, 18 years of age or older,
 # and they are either a Colorado resident or this is a national game
-#
-# ```ruby
-# require "./lib/contestant"
-# #=> true
-#
-# require "./lib/game"
-# #=> true
-#
-# require "./lib/colorado_lottery"
-# #=> true
-#
-# lottery = ColoradoLottery.new
-# #=> #<ColoradoLottery:0x007f8a3250c440...>
+
 #
 # lottery.registered_contestants
 # #=> {}
