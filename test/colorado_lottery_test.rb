@@ -129,62 +129,38 @@ end
     assert_equal [@winston, @grace], @lottery.eligible_contestants(@cash_5)
     assert_equal [@alexander, @frederick, @winston, @grace], @lottery.eligible_contestants(@mega_millions)
   end
+
+  def test_charge_contestants
+    @lottery.register_contestant(@alexander, @pick_4)
+    @lottery.register_contestant(@alexander, @mega_millions)
+    @lottery.register_contestant(@frederick, @mega_millions)
+    @lottery.register_contestant(@winston, @cash_5)
+    @lottery.register_contestant(@grace, @mega_millions)
+    @lottery.register_contestant(@grace, @cash_5)
+    @lottery.register_contestant(@grace, @pick_4)
+
+    @lottery.charge_contestants(@cash_5)
+
+    expected = {@cash_5 => ["Winston Churchill", "Grace Hopper"]}
+    assert_equal expected, @lottery.current_contestants
+    assert_equal 19, @grace.spending_money
+    assert_equal 4, @winston.spending_money
+
+    @lottery.charge_contestants(@mega_millions)
+
+    expected2 = {@cash_5 => ["Winston Churchill", "Grace Hopper"],
+                @mega_millions => ["Alexander Aigades", "Frederick Douglas", "Grace Hopper"]}
+    assert_equal expected2, @lottery.current_contestants
+    assert_equal 14, @grace.spending_money
+    assert_equal 4, @winston.spending_money
+    assert_equal 5, @alexander.spending_money
+    assert_equal 15, @frederick.spending_money
+
+    @lottery.charge_contestants(@pick_4)
+
+    expected3 = {@cash_5 => ["Winston Churchill", "Grace Hopper"],
+                 @mega_millions => ["Alexander Aigades", "Frederick Douglas", "Grace Hopper"],
+                 @pick_4 => ["Alexander Aigades", "Grace Hopper"]}
+    assert_equal expected3, @lottery.current_contestants
+  end
 end
-
-# ### Iteration 3
-#
-# - Use TDD to update your `Lottery` class so that it responds to the following interaction pattern.
-# - To save time, we will keep the same setup from iteration 2 with all of the same objects and interests,
-# plus we will add one additional contestant with interests at a specific point in the interaction.
-# - We will only register contestants that `#can_register?`
-# - `#eligible_contestants` is a list of all the contestants who have been registered to play a
-# given game and that have more spending_money than the cost.
-# - current_contestants are lists of contestant names who have been charged, organized by game.
-
-
-# lottery.eligible_contestants(pick_4)
-# #=> [#<Contestant:0x007ffe95fab0b8...>,
-#  #<Contestant:0x007ffe99998190...>]
-#
-# lottery.eligible_contestants(cash_5)
-# #=> [#<Contestant:0x007ffe96db1180...>, #<Contestant:0x007ffe99998190...>]
-#
-# lottery.eligible_contestants(mega_millions)
-# #=> [#<Contestant:0x007ffe95fab0b8...>, #<Contestant:0x007ffe99848470...>, #<Contestant:0x007ffe99998190...>]
-#
-# lottery.charge_contestants(cash_5)
-#
-# lottery.current_contestants
-# #=> {#<Game:0x007f8a32295360...> => ["Winston Churchill", "Grace Hopper"]}
-#
-# grace.spending_money
-# #=> 19
-#
-# winston.spending_money
-# #=> 4
-#
-# lottery.charge_contestants(mega_millions)
-#
-# lottery.current_contestants
-# #=> {#<Game:0x007f8a32295360...> => ["Winston Churchill", "Grace Hopper"],
-#  #<Game:0x007f8a322ad5a0...> => ["Alexander Aigades", "Frederick Douglas", "Grace Hopper"]}
-#
-# grace.spending_money
-# #=> 14
-#
-# winston.spending_money
-# #=> 4
-#
-# alexander.spending_money
-# #=> 5
-#
-# frederick.spending_money
-# #=> 15
-#
-# lottery.charge_contestants(pick_4)
-#
-# lottery.current_contestants
-# #=> {#<Game:0x007f8a32295360...> => ["Winston Churchill", "Grace Hopper"],
-# #<Game:0x007f8a322ad5a0...> => ["Alexander Aigades", "Frederick Douglas", "Grace Hopper"],
-# #<Game:0x007f8a317b5e40...> => ["Alexander Aigades", "Grace Hopper"]}
-# ```
