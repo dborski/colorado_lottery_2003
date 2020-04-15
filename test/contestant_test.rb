@@ -44,12 +44,3 @@ class ContestantTest < Minitest::Test
     assert_equal ["Mega Millions", "Pick 4"], @alexander.game_interests
   end
 end
-
-
-
-
-
-#
-#alexander.game_interests
-# => ["Mega Millions", "Pick 4"]
-# ```
