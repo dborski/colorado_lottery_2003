@@ -8,4 +8,12 @@ class Contestant
     @state_of_residence = contestant_info[:state_of_residence]
     @spending_money = contestant_info[:spending_money]
   end
+
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+
+  def out_of_state?
+    @state_of_residence != "CO"
+  end
 end
