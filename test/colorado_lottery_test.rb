@@ -70,6 +70,14 @@ end
     assert_equal false, @lottery.interested_and_18?(@alexander, @cash_5)
     assert_equal true, @lottery.interested_and_18?(@alexander, @mega_millions)
   end
+
+  def test_can_register
+    assert_equal true, @lottery.can_register?(@alexander, @pick_4)
+    assert_equal false, @lottery.can_register?(@alexander, @cash_5)
+    assert_equal true, @lottery.can_register?(@frederick, @mega_millions)
+    assert_equal false, @lottery.can_register?(@benjamin, @mega_millions)
+    assert_equal false, @lottery.can_register?(@frederick, @cash_5)
+  end
 end
 
 # ### Iteration 2
